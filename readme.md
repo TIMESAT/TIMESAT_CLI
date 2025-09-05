@@ -1,5 +1,7 @@
 # TIMESAT4.1.7 README
 
+> This repository provides a Python/Fortran interface to TIMESAT, tailored for the HR-VPP2 project. It is primarily used for the calibration, validation, and production of vegetation parameters derived from high-resolution satellite data. The codebase integrates the TIMESAT processing routines with Python workflows, enabling reproducible environment setup, automated compilation, and streamlined execution for operational HR-VPP2 tasks.
+
 > Clean, step‑by‑step instructions to set up, compile, and run the Python/Fortran bridge for TIMESAT on **Linux**. The environment can be created using **conda** or **pip**. No macOS support is provided.
 
 ---
