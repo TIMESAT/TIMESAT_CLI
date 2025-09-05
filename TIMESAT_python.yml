@@ -1,4 +1,4 @@
-name: /projects/eko/fs6/pers/ZC/Conda/env/TSRamona2
+name: TIMESAT4
 channels:
   - conda-forge
   - defaults
