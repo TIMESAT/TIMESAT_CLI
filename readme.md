@@ -69,8 +69,6 @@ chmod +x ./compile_TIMESAT_linux_macOS.sh
 # Build with default version (from the script)
 ./compile_TIMESAT_linux_macOS.sh
 
-# (Advanced) Override the library version if needed
-VERSION=4.1.8 ./compile_TIMESAT_linux_macOS.sh
 ```
 
 After a successful build, a compiled Python extension (e.g., `timesat.cpython-*.so`) will appear in the working directory. You should then be able to import it:
@@ -87,11 +85,6 @@ Depending on your workflow, you may have helper scripts such as `create_file_lis
 Typical commands:
 
 ```bash
-# Example: generate input lists
-python create_file_list.py
-
-# Example: run with a test configuration
-python main.py settings_test.json
 
 # Example: run with a production configuration
 python main.py settings.json
