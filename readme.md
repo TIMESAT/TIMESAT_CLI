@@ -110,9 +110,20 @@ If you work with HRVPP quality flags (`QFLAG2`), the following weights `w` are c
 Example (pseudocode):
 
 ```python
-w = np.ones_like(vi, dtype=float)
-w[np.isin(Q2, [1, 4097, 8193, 12289])] = 1.0
-w[np.isin(Q2, [1025, 9217, 2049, 6145, 3073])] = 0.5
+"p_a": {
+  "value": [
+    [1, 1.0],
+    [4097, 1.0],
+    [8193, 1.0],
+    [12289, 1.0],
+    [1025, 0.5],
+    [9217, 0.5],
+    [2049, 0.5],
+    [6145, 0.5],
+    [3073, 0.5]
+  ],
+  "description": "QA weighting rules. Leave empty [] to keep original QA values. Use [qa_value, weight] for exact matches or [min, max, weight] for ranges."
+}
 ```
 
 ---
