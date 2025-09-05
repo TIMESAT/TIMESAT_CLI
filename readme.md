@@ -107,7 +107,7 @@ If you work with HRVPP quality flags (`QFLAG2`), the following weights `w` are c
 | 6145  | 0.5 |
 | 3073  | 0.5 |
 
-Example (pseudocode):
+Example (settings.json):
 
 ```python
 "p_a": {
