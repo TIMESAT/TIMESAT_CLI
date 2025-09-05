@@ -1,4 +1,4 @@
-name: TIMESAT4
+name: timesat
 channels:
   - conda-forge
   - defaults
