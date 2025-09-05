@@ -159,5 +159,5 @@ conda install -c conda-forge gfortran_linux-64
 
 This project is distributed under the terms specified in the [LICENSE](./LICENSE) file included in the repository. Please review that file for the complete licensing details.
 
-Acknowledgement: credit the original TIMESAT authors as appropriate.
+Acknowledgement: Swedish National Space Agency, European Environment Agency, European Space Agency, Lund University, Malmö University, VITO remote sensing, DHI remote sensing, Cloudflight, Geoville.
 
