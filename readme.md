@@ -1,4 +1,4 @@
-# TIMESAT — Reworked README
+# TIMESAT4.1.7 README
 
 > Clean, step‑by‑step instructions to set up, compile, and run the Python/Fortran bridge for TIMESAT on **Linux**. The environment can be created using **conda** or **pip**. No macOS support is provided.
 
