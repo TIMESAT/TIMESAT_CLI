@@ -26,35 +26,17 @@ Before you begin, ensure the following are available:
 - **gfortran** (installable via conda)
 - The TIMESAT static library archive for Linux (e.g., `libtsprocess_linux_vX.Y.Z.a`)
 
-Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`, `matplotlib`, `tqdm`.
+Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`, `matplotlib`, `tqdm`, 'rasterio', 'ray'.
 
 ---
 
 ## 1) Environment Setup
 
-### Option A — Using conda (recommended)
+### Using conda
 ```bash
-# Create environment from YAML if available
-conda env create -f TIMESAT_python.yml
+# Create environment 
+conda create -n timesat python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default gfortran_linux-64 -c conda-forge
 conda activate timesat
-
-# Or create manually
-conda create -n timesat python=3.10 numpy scipy pandas matplotlib tqdm gfortran_linux-64 -c conda-forge
-conda activate timesat
-```
-
-### Option B — Using pip + conda-forge compilers
-```bash
-# Create and activate a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install packages
-pip install --upgrade pip
-pip install numpy scipy pandas matplotlib tqdm
-
-# Install gfortran via conda (in base or a dedicated env)
-conda install -c conda-forge gfortran_linux-64
 ```
 
 > Ensure `gfortran` is accessible in your PATH after installation.
