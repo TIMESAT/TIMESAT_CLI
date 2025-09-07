@@ -12,7 +12,9 @@ dependencies = [
 "scipy" ,
 "pandas" ,
 "matplotlib", 
-"tqdm"
+"tqdm",
+'rasterio',
+'ray'
 ]
 
 [dependency-groups]
