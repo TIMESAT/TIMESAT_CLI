@@ -187,19 +187,18 @@ def run(jsfile: str) -> None:
 
             # Inputs: #########################################################################
 
-            # yr:             number of year (integer)
-            # vi:             vegetation index (3d numpy integer array; [row,col,t])
-            # qa:             quality (3d numpy integer array; [row,col,t])
-            # timevector:     date of images; in format YYYYDOY (1d numpy integer vector; [t])
-            # lc:      land cover map (2d numpy integer vector; [row,col])
-            # not functioning
+            #int# yr:             number of year (integer)
+            #double# vi:             vegetation index (3d numpy integer array; [row,col,t])
+            #double# qa:             quality (3d numpy integer array; [row,col,t])
+            #int# timevector:     date of images; in format YYYYDOY (1d numpy integer vector; [t])
+            #int# lc:      land cover map (2d numpy integer vector; [row,col])
+            #int# p_nclasses:     number of land cover classes
 
-            # y:              number of row
 
-            # x:              number of col
+            #int# y:              number of row
+            #int# x:              number of col
+            #int# z:              number of input images
 
-            # z:              number of input images
-            # z = int(f.readline())
 
             # settings: ##################################################
             #int# p_ignoreday                     ! ignore date in leap year
