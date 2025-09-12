@@ -41,6 +41,6 @@ case "$OS_TYPE" in
 esac
 
 # Build the Python extension module `timesat` with f2py
-python -m numpy.f2py -c ./python_interface/*.f90 "$LIB_AR" -m timesat
+python -m numpy.f2py -c ./python_interface/*.f90 "$LIB_AR" -m timesat --backend meson
 
 echo "f2py compilation complete. Linked archive: $LIB_AR"
