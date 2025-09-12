@@ -174,6 +174,138 @@ def run(jsfile: str) -> None:
             p_seasonmethod_arr = _seasonmethod_arr(s)
             p_seapar_arr       = _seapar_arr(s)
 
+
+            # Description: ####################################################################
+            '''
+            vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
+                yr, vi, qa, timevector, lc, p_nclasses, landuse, p_outindex,
+                p_ignoreday, p_ylu, p_printflag, p_fitmethod, p_smooth, p_nodata, p_outlier,
+                p_nenvi, p_wfactnum, p_startmethod, p_startcutoff, p_low_percentile,
+                p_fillbase, p_hrvppformat, p_seasonmethod, p_seapar,
+                y, x, z, p_outindex_num)
+            '''
+
+            # Inputs: #########################################################################
+
+            # yr:             number of year (integer)
+            # vi:             vegetation index (3d numpy integer array; [row,col,t])
+            # qa:             quality (3d numpy integer array; [row,col,t])
+            # timevector:     date of images; in format YYYYDOY (1d numpy integer vector; [t])
+            # lc:      land cover map (2d numpy integer vector; [row,col])
+            # not functioning
+
+            # y:              number of row
+
+            # x:              number of col
+
+            # z:              number of input images
+            # z = int(f.readline())
+
+            # settings: ##################################################
+            #int# p_ignoreday                     ! ignore date in leap year
+
+            #dbl# p_ylu(2)                        ! range for y-values
+            #p_ylu = [limitmin,limitmax]
+
+            #dbl# p_a(9)                          ! range and weights for mask data conversion
+            #p_a = [range1min,range1max,weight1,range2min,range2max,weight2,range3min,range3max,weight3]
+
+            #int# p_printflag                     ! plot functions and weights (1/0)
+            #p_printflag            = 1 # debugging information will be printed
+            #p_printflag            = 2 # speed test
+            #p_printflag            = 99 # the row number is running
+            #p_printflag            = 98 # the row & col number is running
+
+            #int# p_nodata                        ! no data from outputs ! NEW
+
+            #int# p_nenvi                         ! number of envelope iterations
+
+            #dbl# p_wfactnum                      ! adaptation strength
+
+            #int# p_startmethod                   ! method for season start
+
+            #dbl# p_startcutoff(2)            ! parameter for season start
+            #p_startcutoff = [start of season threshold, end of season threshold]
+
+            #dbl# p_low_percentile                ! parameter for define base level
+
+            #int# p_hrvppformat                     ! 1: output as HRVPP format (YYDOY)
+            #                                       ! 0: output as TIMESAT format (sequential number, no scalling)
+
+            #dbl# p_seapar(0-1)                  ! parameter for define the level of detecting small seasonal variations
+            #                                    ! mostly effect on the time series with large amplitude
+            #       ! close to 0: more seasons will be detect when the amplitude of time series is close to p_ylu(2)-p_ylu(1)
+            #       ! close to 1: less seasons will be detect when the amplitude of time series is close to p_ylu(2)-p_ylu(1)
+            #   default value is      : 0.5
+            #   31UFS x_5500_y_0      : 0.25 maybe better for crop
+
+            #int# p_outindex(yr*365)              ! an index vector indicates which day will be output
+            #p_outindex = = 1 # output the first day only
+            vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
+                yr, vi, qa, timevector, lc, s.p_nclasses, landuse_arr, p_outindex,
+                s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr, s.p_nodata, s.p_outlier,
+                p_nenvi_arr, p_wfactnum_arr, p_startmethod_arr, p_startcutoff_arr, p_low_percentile_arr,
+                p_fillbase_arr, s.p_hrvppformat, p_seasonmethod_arr, p_seapar_arr,
+                y, x, len(flist), p_outindex_num)
+
+            # Outputs: ########################################################################
+            # vpp       :  phenological parameters                     (size: [y,x,nyear*2*13])
+            # vppqa     :  phenological parameters qaulity             (size: [y,x,nyear*2])
+            # nseason   :  number of season                            (size: [y,x])
+            # yfit      :  fit time series                             (size: [y,x,p_outindex_num])
+            # yfitqa    :  fit time series                             (size: [y,x,p_outindex_num])
+            # seasonfit :  caurse season fit                           (size: [p_outindex_num])
+            # tseq      :  sequential time                             (size: [p_outindex_num])
+
+            # Note:
+            # vpp   : 
+            #     Two seasons are stored per year      HRVPP format/scalling factor
+                    # ! 1) season start date                YYDOY
+                    # ! 2) season start value               *10000
+                    # ! 3) season start derivative          *10000
+                    # ! 4) season end date                  YYDOY
+                    # ! 5) season end values                *10000
+                    # ! 6) season end derivative            *10000
+                    # ! 7) season length                    -
+                    # ! 8) basevalue                        *10000
+                    # ! 9) time for peak                    YYDOY
+                    # ! 10) value at peak                   *10000
+                    # ! 11) seasonal amplitude              *10000
+                    # ! 12) large integral                  *10
+                    # ! 13) small integral                  *10
+            # vppqa :  
+            #       Two seasons are stored per year
+            #       vppqa is checking the data availability in each zone in the season
+            #       zone A: start of season
+            #       zone B: peak of season
+            #       zone C: end of season      
+            #       Enough means the zone has 2 or more than 2 good observations
+            #       vppqa class                         vppqa code
+                    # ! 1) Enough data in all zones          10
+                    # ! 2) Enough data in zones B & C         9
+                    # ! 3) Enough data in zones A & C         8
+                    # ! 4) Enough data in zones A & B         7
+                    # ! 5) Enough data in zone A              6
+                    # ! 6) Enough data in zone B              5
+                    # ! 7) Enough data in zone C              4
+                    # ! 8) Fixed-incease point missing        3
+                    # ! 9) No enough data in any zone         2
+                    # ! 10) No season found                   1
+                    # ! 11) Nodata (no yfit output)           0
+            # yfitqa :  
+            #       yfitqa is defind by the number of good observations found in 90-day window      
+            #       yfitqa class                         yfitqa code
+                    # ! 1) >8 observations                    5
+                    # ! 2) >=3 & <= 8 observations            4
+                    # ! 3) >0 & <3 observations               3
+                    # ! 4) no observations (interpolation)    2
+                    # ! 5) no observations (extrapolation)    1
+                    # ! 6) Nodata (no yfit output)            0
+            # seasonfit :
+            #       caurse season fit. Only for single time sereis process and testing
+            # tseq : 
+            #       sequential time
+
             vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
                 yr, vi, qa, timevector, lc, s.p_nclasses, landuse_arr, p_outindex,
                 s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr, s.p_nodata, s.p_outlier,
