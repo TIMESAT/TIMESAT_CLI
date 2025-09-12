@@ -240,12 +240,6 @@ def run(jsfile: str) -> None:
 
             #int# p_outindex(yr*365)              ! an index vector indicates which day will be output
             #p_outindex = = 1 # output the first day only
-            vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
-                yr, vi, qa, timevector, lc, s.p_nclasses, landuse_arr, p_outindex,
-                s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr, s.p_nodata, s.p_outlier,
-                p_nenvi_arr, p_wfactnum_arr, p_startmethod_arr, p_startcutoff_arr, p_low_percentile_arr,
-                p_fillbase_arr, s.p_hrvppformat, p_seasonmethod_arr, p_seapar_arr,
-                y, x, len(flist), p_outindex_num)
 
             # Outputs: ########################################################################
             # vpp       :  phenological parameters                     (size: [y,x,nyear*2*13])
