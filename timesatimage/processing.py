@@ -188,8 +188,8 @@ def run(jsfile: str) -> None:
             # Inputs: #########################################################################
 
             #int# yr:             number of year (integer)
-            #double# vi:             vegetation index (3d numpy integer array; [row,col,t])
-            #double# qa:             quality (3d numpy integer array; [row,col,t])
+            #double# vi:             vegetation index (3d numpy array; [row,col,t])
+            #double# qa:             quality (3d numpy array; [row,col,t])
             #int# timevector:     date of images; in format YYYYDOY (1d numpy integer vector; [t])
             #int# lc:      land cover map (2d numpy integer vector; [row,col])
             #int# p_nclasses:     number of land cover classes

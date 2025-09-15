@@ -15,6 +15,8 @@ This repository provides a Python interface (via **NumPy f2py**) to the TIMESAT 
 4. Run the application scripts (e.g., `main.py`) with your settings.
 
 Supported platform: **Linux** (tested on Ubuntu and similar distributions).
+- The TIMESAT static library archive for Linux (e.g., `libtsprocess_linux_vX.Y.Z.a`) is **proprietary software**.
+- Usage of this archive is governed by the terms in [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).
 
 ---
 
@@ -141,7 +143,15 @@ conda install -c conda-forge gfortran_linux-64
 
 ## License & Attribution
 
-This project is distributed under the terms specified in the [LICENSE](./LICENSE) file included in the repository. Please review that file for the complete licensing details.
+This repository contains two distinct components, each under a different license:
 
-Acknowledgement: Swedish National Space Agency, European Environment Agency, European Space Agency, Lund University, Malmö University, VITO remote sensing, DHI remote sensing, Cloudflight, Geoville.
+- **Python interface and helper scripts (in `timesatimage/`, `python_interface/`, etc.)**  
+  Distributed under the open-source license specified in [LICENSE](./LICENSE).
+
+- **Precompiled Fortran static library archives (in `vendor/`)**  
+  These files are **proprietary and closed-source**.  
+  Their use is strictly governed by the [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).  
+  Redistribution, reverse engineering, or modification of these archives is prohibited.
+
+Acknowledgement: Swedish National Space Agency, European Environment Agency, European Space Agency, VITO remote sensing, DHI remote sensing, Cloudflight, Geoville.
 
