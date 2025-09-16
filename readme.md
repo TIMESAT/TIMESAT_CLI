@@ -145,8 +145,19 @@ conda install -c conda-forge gfortran_linux-64
 
 This repository contains two distinct components, each under a different license:
 
-- **Python interface and helper scripts (in `timesatimage/`, `python_interface/`, etc.)**  
-  Distributed under the open-source license specified in [LICENSE](./LICENSE).
+## License
+
+This project is distributed under a **dual licensing model**:
+
+- **Open Source License (GPLv3)**  
+  You may use, modify, and distribute this software under the terms of the GNU General Public License v3.0.  
+  See the [LICENSE](./LICENSE) file for the full text.
+
+- **Commercial License**  
+  If you cannot comply with the terms of the GPLv3 (for example, if you want to integrate this code into closed-source or commercial software),  
+  you must obtain a separate commercial license from [Your Name / Organization].  
+  See [COMMERCIAL-LICENSE.txt](./COMMERCIAL-LICENSE.txt) for details, or contact us at:  
+  **[zhanzhang.cai@nateko.lu.se]**
 
 - **Precompiled Fortran static library archives (in `vendor/`)**  
   These files are **proprietary and closed-source**.  
