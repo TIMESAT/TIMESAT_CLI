@@ -141,24 +141,19 @@ conda install -c conda-forge gfortran_linux-64
 
 ---
 
-## License & Attribution
+## License
 
-This repository contains three distinct components, each under a different license:
+This repository consists of two parts, each under different terms:
 
-- **Open Source License (GPLv3)**  
-  You may use, modify, and distribute this software under the terms of the GNU General Public License v3.0.  
-  See the [LICENSE](./LICENSE) file for the full text.
+- **Python/Fortran interface code** (in `python_interface/`)  
+  Licensed under the [Apache License 2.0](./python_interface/LICENSE).  
+  You are free to use, modify, and distribute this code under the Apache-2.0 terms.
 
-- **Commercial License**  
-  If you cannot comply with the terms of the GPLv3 (for example, if you want to integrate this code into closed-source or commercial software),  
-  you must obtain a separate commercial license from [Zhanzhang Cai / Lund University].  
-  See [COMMERCIAL-LICENSE.txt](./COMMERCIAL-LICENSE.txt) for details, or contact us at:  
-  **[zhanzhang.cai@nateko.lu.se]**
-
-- **Precompiled Fortran static library archives (in `vendor/`)**  
-  These files are **proprietary and closed-source**.  
-  Their use is strictly governed by the [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).  
-  Redistribution, reverse engineering, or modification of these archives is prohibited.
+- **Precompiled Fortran static libraries (`.a` files in `vendor/`)**  
+  These are **proprietary and closed-source**.  
+  All rights reserved by Zhanzhang Cai(Lund University), Lars Eklundh(Lund University), and Per Jönsson(Malmö University).  
+  Usage is subject to [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).  
+  Redistribution, modification, or reverse engineering of these libraries is strictly prohibited.
 
 Acknowledgement: Swedish National Space Agency, European Environment Agency, European Space Agency, VITO remote sensing, DHI remote sensing, Cloudflight, Geoville.
 
