@@ -155,7 +155,7 @@ This project is distributed under a **dual licensing model**:
 
 - **Commercial License**  
   If you cannot comply with the terms of the GPLv3 (for example, if you want to integrate this code into closed-source or commercial software),  
-  you must obtain a separate commercial license from [Your Name / Organization].  
+  you must obtain a separate commercial license from [Zhanzhang Cai / Lund University].  
   See [COMMERCIAL-LICENSE.txt](./COMMERCIAL-LICENSE.txt) for details, or contact us at:  
   **[zhanzhang.cai@nateko.lu.se]**
 
