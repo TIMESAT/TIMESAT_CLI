@@ -143,11 +143,7 @@ conda install -c conda-forge gfortran_linux-64
 
 ## License & Attribution
 
-This repository contains two distinct components, each under a different license:
-
-## License
-
-This project is distributed under a **dual licensing model**:
+This repository contains three distinct components, each under a different license:
 
 - **Open Source License (GPLv3)**  
   You may use, modify, and distribute this software under the terms of the GNU General Public License v3.0.  
