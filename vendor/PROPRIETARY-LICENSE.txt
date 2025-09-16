@@ -15,9 +15,7 @@ You may NOT:
   or any derivative works to any third party;
 - reverse engineer, decompile, disassemble, or otherwise attempt to derive 
   the source code of the Library;
-- modify, adapt, translate, or create derivative works based on the Library;
-- use the Library for any purpose other than linking with the official 
-  Python interface provided in this repository.
+- modify, adapt, translate, or create derivative works based on the Library.
 
 3. Ownership
 The Library is and shall remain the exclusive property of 
