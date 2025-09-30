@@ -10,23 +10,17 @@
 This repository provides a Python interface (via **NumPy f2py**) to the TIMESAT Fortran routines. You will:
 
 1. Prepare a Python environment (conda or pip).
-2. Install `gfortran` (via conda or your system package manager).
-3. Compile the Fortran archive into a Python extension using the provided shell script.
-4. Run the application scripts (e.g., `main.py`) with your settings.
-
-Supported platform: **Linux** (tested on Ubuntu and similar distributions).
-- The TIMESAT static library archive for Linux (e.g., `libtsprocess_linux_vX.Y.Z.a`) is **proprietary software**.
-- Usage of this archive is governed by the terms in [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).
+2. Install timesat from Testpypi.
+3. Run the application scripts (e.g., `main.py`) with your settings.
 
 ---
 
 ## Prerequisites
 Before you begin, ensure the following are available:
 
-- **Python 3.9+** (3.10/3.11 recommended)
-- **NumPy** (includes `numpy.f2py` used for the build)
-- **gfortran** (installable via conda)
-- The TIMESAT static library archive for Linux (e.g., `libtsprocess_linux_vX.Y.Z.a`)
+- **Python**: 3.10 or newer
+
+> Note: Wheels are uploaded to **TestPyPI** for evaluation. Dependencies are resolved from PyPI via an extra index.
 
 Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`, `matplotlib`, `tqdm`, 'rasterio', 'ray'.
 
@@ -37,11 +31,9 @@ Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`,
 ### Using conda
 ```bash
 # Create environment 
-conda create -n timesat python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default -c conda-forge
-conda activate timesat
+conda create -n timesatenv python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default -c conda-forge
+conda activate timesatenv
 ```
-
-> Ensure `gfortran` is accessible in your PATH after installation.
 
 ---
 
