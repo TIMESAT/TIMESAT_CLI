@@ -2,7 +2,7 @@
 
 > This repository provides a Python/Fortran interface to TIMESAT.
 
-> Clean, step‑by‑step instructions to set up, compile, and run the Python/Fortran bridge for TIMESAT on **Linux**. The environment can be created using **conda** or **pip**. No macOS support is provided.
+> Clean, step‑by‑step instructions to set up, compile, and run TIMESAT. The environment can be created using **conda** and **pip**.
 
 ---
 
@@ -37,7 +37,7 @@ Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`,
 ### Using conda
 ```bash
 # Create environment 
-conda create -n timesat python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default gfortran_linux-64 -c conda-forge
+conda create -n timesat python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default -c conda-forge
 conda activate timesat
 ```
 
@@ -45,23 +45,23 @@ conda activate timesat
 
 ---
 
-## 2) Compile the Fortran extension with f2py
-Use the provided script. It auto‑detects your OS (Linux only) and selects the correct archive name.
+## 2) Install TIMESAT
+Install from **TestPyPI**, allowing dependencies to come from PyPI:
 
 ```bash
-# Make the script executable (first time only)
-chmod +x ./compile_TIMESAT_linux_macOS.sh
-
-# Build with default version (from the script)
-./compile_TIMESAT_linux_macOS.sh
-
+python -m pip install \
+  --index-url https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple \
+  timesat==4.1.7
 ```
 
-After a successful build, a compiled Python extension (e.g., `timesat.cpython-*.so`) will appear in the working directory. You should then be able to import it:
+Verify the install and that the native extension is importable:
 
-```python
-import timesat
+```bash
+python -c "import timesat, timesat._timesat as _; print('timesat', timesat.__version__, 'OK')"
 ```
+
+Expected output includes the version and `OK`.
 
 ---
 
@@ -114,33 +114,6 @@ Example (settings.json):
 
 ---
 
-## Troubleshooting
-
-**`gfortran: command not found`**
-- Install via conda:
-```bash
-conda install -c conda-forge gfortran_linux-64
-```
-
-**`numpy.f2py: no module named numpy`**
-- Activate your environment and `pip install numpy`.
-
-**Archive not found (e.g., `libtsprocess_linux_v*.a`)**
-- Verify the correct archive is present for your OS and version.
-- If your file is versioned differently, either rename it to match the convention or call the build with `VERSION=X.Y.Z`.
-
-**ImportError when importing `timesat`**
-- Ensure you run Python from the same environment used to build the module.
-- Confirm the compiled `.so` (Linux) resides on your Python path (current directory is fine).
-
----
-
-## Reproducible builds & notes
-- Prefer conda environments for consistent results across machines.
-- For pip‑only workflows, ensure conda provides `gfortran_linux-64` to avoid compiler issues.
-
----
-
 ## License
 
 This repository consists of two parts, each under different terms:
@@ -149,7 +122,7 @@ This repository consists of two parts, each under different terms:
   Licensed under the [Apache License 2.0](./python_interface/LICENSE).  
   You are free to use, modify, and distribute this code under the Apache-2.0 terms.
 
-- **Precompiled Fortran static libraries (`.a` files in `vendor/`)**  
+- **Precompiled wheels (TestPypi download)**  
   These are **proprietary and closed-source**.  
   All rights reserved by Zhanzhang Cai(Lund University), Lars Eklundh(Lund University), and Per Jönsson(Malmö University).  
   Usage is subject to [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).  
