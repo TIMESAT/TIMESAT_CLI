@@ -41,10 +41,7 @@ conda activate timesatenv
 Install from **TestPyPI**, allowing dependencies to come from PyPI:
 
 ```bash
-python -m pip install \
-  --index-url https://test.pypi.org/simple/ \
-  --extra-index-url https://pypi.org/simple \
-  timesat==4.1.7
+python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple timesat==4.1.7.dev0
 ```
 
 Verify the install and that the native extension is importable:
