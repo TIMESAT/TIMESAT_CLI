@@ -112,7 +112,7 @@ This repository consists of two parts, each under different terms:
   You are free to use, modify, and distribute this code under the Apache-2.0 terms.
 
 - **Precompiled wheels (TestPypi download)**  
-  These are **proprietary and closed-source**.  
+  **timesat model** is **proprietary and closed-source**.  
   All rights reserved by Zhanzhang Cai(Lund University), Lars Eklundh(Lund University), and Per Jönsson(Malmö University).  
   Usage is subject to [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).  
   Redistribution, modification, or reverse engineering of these libraries is strictly prohibited.
