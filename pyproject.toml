@@ -8,18 +8,19 @@ description = "HRVPP2"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-"numpy>=2" ,
-"scipy" ,
+"numpy>=2"
+]
+
+[dependency-groups] 
+dev = ["pre-commit", "ruff", "matplotlib"]
+
+[optional-dependencies]
+extras = [
 "pandas" ,
-"matplotlib", 
 "tqdm",
 'rasterio',
 'ray',
-'meson>=1.1'
 ]
-
-[dependency-groups]
-dev = ["pre-commit", "ruff>=0.11.0"]
 
 [build-system]
 requires = ["hatchling"]
