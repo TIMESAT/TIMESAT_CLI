@@ -1,8 +1,8 @@
 # TIMESAT4.1.7 README
 
-> This repository provides a Python/Fortran interface to TIMESAT, tailored for the HR-VPP2 project. It is primarily used for the calibration, validation, and production of vegetation parameters derived from high-resolution satellite data. The codebase integrates the TIMESAT processing routines with Python workflows, enabling reproducible environment setup, automated compilation, and streamlined execution for operational HR-VPP2 tasks.
+> This repository provides a Python/Fortran interface to TIMESAT.
 
-> Clean, step‑by‑step instructions to set up, compile, and run the Python/Fortran bridge for TIMESAT on **Linux**. The environment can be created using **conda** or **pip**. No macOS support is provided.
+> Clean, step‑by‑step instructions to set up, compile, and run TIMESAT. The environment can be created using **conda** and **pip**.
 
 ---
 
@@ -10,21 +10,17 @@
 This repository provides a Python interface (via **NumPy f2py**) to the TIMESAT Fortran routines. You will:
 
 1. Prepare a Python environment (conda or pip).
-2. Install `gfortran` (via conda or your system package manager).
-3. Compile the Fortran archive into a Python extension using the provided shell script.
-4. Run the application scripts (e.g., `main.py`) with your settings.
-
-Supported platform: **Linux** (tested on Ubuntu and similar distributions).
+2. Install timesat from Testpypi.
+3. Run the application scripts (e.g., `main.py`) with your settings.
 
 ---
 
 ## Prerequisites
 Before you begin, ensure the following are available:
 
-- **Python 3.9+** (3.10/3.11 recommended)
-- **NumPy** (includes `numpy.f2py` used for the build)
-- **gfortran** (installable via conda)
-- The TIMESAT static library archive for Linux (e.g., `libtsprocess_linux_vX.Y.Z.a`)
+- **Python**: 3.10 or newer
+
+> Note: Wheels are uploaded to **TestPyPI** for evaluation. Dependencies are resolved from PyPI via an extra index.
 
 Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`, `matplotlib`, `tqdm`, 'rasterio', 'ray'.
 
@@ -35,31 +31,26 @@ Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`,
 ### Using conda
 ```bash
 # Create environment 
-conda create -n timesat python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default gfortran_linux-64 -c conda-forge
-conda activate timesat
+conda create -n timesatenv python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default -c conda-forge
+conda activate timesatenv
 ```
-
-> Ensure `gfortran` is accessible in your PATH after installation.
 
 ---
 
-## 2) Compile the Fortran extension with f2py
-Use the provided script. It auto‑detects your OS (Linux only) and selects the correct archive name.
+## 2) Install TIMESAT
+Install from **TestPyPI**, allowing dependencies to come from PyPI:
 
 ```bash
-# Make the script executable (first time only)
-chmod +x ./compile_TIMESAT_linux_macOS.sh
-
-# Build with default version (from the script)
-./compile_TIMESAT_linux_macOS.sh
-
+python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple timesat==4.1.7.dev0
 ```
 
-After a successful build, a compiled Python extension (e.g., `timesat.cpython-*.so`) will appear in the working directory. You should then be able to import it:
+Verify the install and that the native extension is importable:
 
-```python
-import timesat
+```bash
+python -c "import timesat, timesat._timesat as _; print('timesat', timesat.__version__, 'OK')"
 ```
+
+Expected output includes the version and `OK`.
 
 ---
 
@@ -112,36 +103,19 @@ Example (settings.json):
 
 ---
 
-## Troubleshooting
+## License
 
-**`gfortran: command not found`**
-- Install via conda:
-```bash
-conda install -c conda-forge gfortran_linux-64
-```
+This repository consists of two parts, each under different terms:
 
-**`numpy.f2py: no module named numpy`**
-- Activate your environment and `pip install numpy`.
+- **Python/Fortran interface code** (in `python_interface/`)  
+  Licensed under the [Apache License 2.0](./python_interface/LICENSE).  
+  You are free to use, modify, and distribute this code under the Apache-2.0 terms.
 
-**Archive not found (e.g., `libtsprocess_linux_v*.a`)**
-- Verify the correct archive is present for your OS and version.
-- If your file is versioned differently, either rename it to match the convention or call the build with `VERSION=X.Y.Z`.
+- **Precompiled wheels (TestPypi download)**  
+  **timesat model** is **proprietary and closed-source**.  
+  All rights reserved by Zhanzhang Cai(Lund University), Lars Eklundh(Lund University), and Per Jönsson(Malmö University).  
+  Usage is subject to [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).  
+  Redistribution, modification, or reverse engineering of these libraries is strictly prohibited.
 
-**ImportError when importing `timesat`**
-- Ensure you run Python from the same environment used to build the module.
-- Confirm the compiled `.so` (Linux) resides on your Python path (current directory is fine).
-
----
-
-## Reproducible builds & notes
-- Prefer conda environments for consistent results across machines.
-- For pip‑only workflows, ensure conda provides `gfortran_linux-64` to avoid compiler issues.
-
----
-
-## License & Attribution
-
-This project is distributed under the terms specified in the [LICENSE](./LICENSE) file included in the repository. Please review that file for the complete licensing details.
-
-Acknowledgement: Swedish National Space Agency, European Environment Agency, European Space Agency, Lund University, Malmö University, VITO remote sensing, DHI remote sensing, Cloudflight, Geoville.
+Acknowledgement: Swedish National Space Agency, European Environment Agency, European Space Agency, VITO remote sensing, DHI remote sensing, Cloudflight, Geoville.
 
