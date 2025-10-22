@@ -1,5 +1,5 @@
 [project]
-name = "timesat"
+name = "timesatimage"
 version = "4.1.7" 
 authors = [
   {name= "Zhanzhang Cai"},
