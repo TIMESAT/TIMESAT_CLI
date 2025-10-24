@@ -15,57 +15,6 @@ This repository provides a Python interface (via **NumPy f2py**) to the TIMESAT 
 
 ---
 
-## Prerequisites
-Before you begin, ensure the following are available:
-
-- **Python**: 3.10 or newer
-
-> Note: Wheels are uploaded to **TestPyPI** for evaluation. Dependencies are resolved from PyPI via an extra index.
-
-Optional/common runtime packages (depending on your scripts): `scipy`, `pandas`, `matplotlib`, `tqdm`, 'rasterio', 'ray'.
-
----
-
-## 1) Environment Setup
-
-### Using conda
-```bash
-# Create environment 
-conda create -n timesatenv python=3.10 numpy scipy pandas matplotlib tqdm rasterio ray-default -c conda-forge
-conda activate timesatenv
-```
-
----
-
-## 2) Install TIMESAT
-Install from **TestPyPI**, allowing dependencies to come from PyPI:
-
-```bash
-python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple timesat==4.1.7.dev0
-```
-
-Verify the install and that the native extension is importable:
-
-```bash
-python -c "import timesat, timesat._timesat as _; print('timesat', timesat.__version__, 'OK')"
-```
-
-Expected output includes the version and `OK`.
-
----
-
-## 3) Run the application
-Depending on your workflow, you may have helper scripts such as `create_file_list.py` and a main driver `main.py`.
-
-Typical commands:
-
-```bash
-
-# Example: run with a production configuration
-python main.py settings.json
-```
-
----
 
 ## HRVPP Notes — QFLAG2 weights
 If you work with HRVPP quality flags (`QFLAG2`), the following weights `w` are commonly applied:
@@ -111,11 +60,37 @@ This repository consists of two parts, each under different terms:
   Licensed under the [Apache License 2.0](./python_interface/LICENSE).  
   You are free to use, modify, and distribute this code under the Apache-2.0 terms.
 
-- **Precompiled wheels (TestPypi download)**  
-  **timesat model** is **proprietary and closed-source**.  
-  All rights reserved by Zhanzhang Cai(Lund University), Lars Eklundh(Lund University), and Per Jönsson(Malmö University).  
-  Usage is subject to [PROPRIETARY-LICENSE.txt](./vendor/PROPRIETARY-LICENSE.txt).  
-  Redistribution, modification, or reverse engineering of these libraries is strictly prohibited.
+### 📦 Dependency Licenses
 
-Acknowledgement: Swedish National Space Agency, European Environment Agency, European Space Agency, VITO remote sensing, DHI remote sensing, Cloudflight, Geoville.
+- `timesat-gui` may install additional open-source dependencies (e.g., Flask, pandas, NumPy).  
+- Each dependency retains its own license (MIT, BSD, Apache, etc.).  
+- Before redistributing or bundling this software, review the license terms of each dependency carefully.
+
+### ⚖️ Summary
+
+| Component        | License Type | Notes |
+|------------------|--------------|-------|
+| TIMESAT-GUI      | GPL v3       | Open source, modification and redistribution permitted under GPL. |
+| TIMESAT          | Proprietary  | All rights reserved. Redistribution and modification prohibited without written consent. |
+| Other Dependencies | Various (MIT/BSD/Apache) | Check individual package licenses before redistribution. |
+
+For detailed license information, refer to the license files distributed with each installed package.
+
+---
+
+## Citation
+
+If you use **TIMESAT** or **TIMESAT-GUI** in your research, please cite the corresponding release on Zenodo:
+
+> Cai, Z., Eklundh, L., & Jönsson, P. (2025). *TIMESAT4:  is a software package for analysing time-series of satellite sensor data* (Version 4.1.x) [Computer software]. Zenodo.   
+> [https://doi.org/10.5281/zenodo.17369757](https://doi.org/10.5281/zenodo.17369757)
+
+---
+
+## Acknowledgments
+
+- [TIMESAT](https://www.nateko.lu.se/TIMESAT) — Original analysis framework for satellite time-series data.  
+- This project acknowledges the Swedish National Space Agency (SNSA), the European Environment Agency (EEA), and the European Space Agency (ESA) for their support and for providing access to satellite data and related resources that made this software possible.
+
+---
 
