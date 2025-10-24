@@ -118,7 +118,7 @@ def run(jsfile: str) -> None:
 
         print('--- start TIMESAT processing ---  starttime: ' + str(datetime.datetime.now()))
 
-        if s.scale != 0 or s.offset != 0:
+        if s.scale != 1 or s.offset != 0:
             vi = vi * s.scale + s.offset
 
         if s.para_check > 1 and ray_inited:
@@ -133,7 +133,7 @@ def run(jsfile: str) -> None:
                     s.p_ignoreday, s.p_ylu, s.p_printflag,
                     _fitmethod_arr(s),
                     _smooth_arr(s),
-                    s.p_nodata, s.p_outlier,
+                    s.p_nodata, s.p_davailwin, s.p_outlier,
                     _nenvi_arr(s),
                     _wfactnum_arr(s),
                     _startmethod_arr(s),
@@ -301,7 +301,7 @@ def run(jsfile: str) -> None:
 
             vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
                 yr, vi, qa, timevector, lc, s.p_nclasses, landuse_arr, p_outindex,
-                s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr, s.p_nodata, s.p_outlier,
+                s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr, s.p_nodata, s.p_davailwin, s.p_outlier,
                 p_nenvi_arr, p_wfactnum_arr, p_startmethod_arr, p_startcutoff_arr, p_low_percentile_arr,
                 p_fillbase_arr, s.p_hrvppformat, p_seasonmethod_arr, p_seapar_arr,
                 y, x, len(flist), p_outindex_num)

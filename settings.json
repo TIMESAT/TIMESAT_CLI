@@ -70,7 +70,7 @@
       "description": "Temporary directory for Ray (only used if para_check > 1). Must be writable."
     },
     "scale": {
-      "value": 0,
+      "value": 1,
       "description": "Optional scaling factor applied to image values before processing. 0 = disabled."
     },
     "offset": {

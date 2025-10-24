@@ -17,7 +17,7 @@ For any further questions or assistance, please contact:
 
 import sys
 import os
-from timesatimage import run
+from timesat_cli import run
 
 def main():
     """
