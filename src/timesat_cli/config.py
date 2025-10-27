@@ -35,6 +35,7 @@ class Settings:
     p_a: List[List[float]]
     p_st_timestep: int
     p_nodata: float
+    p_davailwin: int
     p_outlier: int
     p_printflag: int
     max_memory_gb: float
@@ -99,6 +100,7 @@ def load_config(jsfile: str) -> Config:
         p_a=s["p_a"]["value"],
         p_st_timestep=int(s["p_st_timestep"]["value"]),
         p_nodata=float(s["p_nodata"]["value"]),
+        p_davailwin=int(s["p_davailwin"]["value"]),
         p_outlier=int(s["p_outlier"]["value"]),
         p_printflag=int(s["p_printflag"]["value"]),
         max_memory_gb=float(s["max_memory_gb"]["value"]),
