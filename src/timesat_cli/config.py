@@ -114,3 +114,47 @@ def load_config(jsfile: str) -> Config:
     )
 
     return Config(settings=settings)
+
+
+def build_param_array(
+    s,
+    attr: str,
+    dtype,
+    size: int = 255,
+    shape: Tuple[int, ...] | None = None,
+    fortran_2d: bool = False
+):
+    """
+    Build a parameter array for TIMESAT class settings.
+
+    Parameters
+    ----------
+    s : object
+        Settings container with `classes` iterable.
+    attr : str
+        Attribute on each class object in `s.classes` (e.g., 'p_smooth').
+    dtype : numpy dtype or dtype string (e.g., 'uint8', 'double').
+    size : int
+        Length of the first dimension (TIMESAT expects 255).
+    shape : tuple[int, ...] | None
+        Extra trailing shape for per-class vectors (e.g., (2,) for p_startcutoff).
+    fortran_2d : bool
+        If True and `shape==(2,)`, allocate (size,2) with order='F' to mirror legacy layout.
+
+    Returns
+    -------
+    np.ndarray
+        Filled parameter array.
+    """
+    if shape is None:
+        arr = np.zeros(size, dtype=dtype)
+        for i, c in enumerate(s.classes):
+            arr[i] = getattr(c, attr)
+        return arr
+
+    full_shape = (size, *shape)
+    order = 'F' if fortran_2d and len(shape) == 1 and shape[0] > 1 else 'C'
+    arr = np.zeros(full_shape, dtype=dtype, order=order)
+    for i, c in enumerate(s.classes):
+        arr[i, ...] = getattr(c, attr)
+    return arr

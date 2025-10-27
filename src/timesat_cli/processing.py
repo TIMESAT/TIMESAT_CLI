@@ -7,23 +7,14 @@ import rasterio
 
 import timesat  # external dependency
 
-from .config import load_config
+from .config import load_config, build_param_array
 from .readers import read_file_lists, open_image_data
-from .timevec import read_time_vector
-from .fsutils import create_output_folders
+from .fsutils import create_output_folders, memory_plan
 from .writers import prepare_profiles, write_vpp_layers, write_st_layers
 from .parallel import maybe_init_ray
 
 VPP_NAMES = ["SOSD","SOSV","LSLOPE","EOSD","EOSV","RSLOPE","LENGTH",
              "MINV","MAXD","MAXV","AMPL","TPROD","SPROD"]
-
-
-def _unique_by_timevector(flist: List[str], qlist: List[str], timevector):
-    tv_unique, indices = np.unique(timevector, return_index=True)
-    flist2 = [flist[i] for i in indices]
-    qlist2 = [qlist[i] for i in indices] if qlist else []
-    return tv_unique, flist2, qlist2
-
 
 def _build_output_filenames(st_folder: str, vpp_folder: str, p_outindex, yrstart: int, yrend: int):
     outyfitfn = []
@@ -40,59 +31,7 @@ def _build_output_filenames(st_folder: str, vpp_folder: str, p_outindex, yrstart
     return outyfitfn, outvppfn, outnsfn
 
 
-def _memory_plan(dx: int, dy: int, z: int, p_outindex_num: int, yr: int, max_memory_gb: float) -> Tuple[int, int]:
-    num_layers = p_outindex_num + z * 2 + (13 * 2) * yr
-    bytes_per = 4  # float32
-    max_bytes = max_memory_gb * (2 ** 30)
-    dy_max = max_bytes / (dx * num_layers * bytes_per)
-    y_slice_size = int(min(math.floor(dy_max), dy)) if dy_max > 0 else dy
-    y_slice_size = max(1, y_slice_size)
-    num_block = int(math.ceil(dy / y_slice_size))
-    return y_slice_size, num_block
 
-
-def _build_param_array(
-    s,
-    attr: str,
-    dtype,
-    size: int = 255,
-    shape: Tuple[int, ...] | None = None,
-    fortran_2d: bool = False
-):
-    """
-    Build a parameter array for TIMESAT class settings.
-
-    Parameters
-    ----------
-    s : object
-        Settings container with `classes` iterable.
-    attr : str
-        Attribute on each class object in `s.classes` (e.g., 'p_smooth').
-    dtype : numpy dtype or dtype string (e.g., 'uint8', 'double').
-    size : int
-        Length of the first dimension (TIMESAT expects 255).
-    shape : tuple[int, ...] | None
-        Extra trailing shape for per-class vectors (e.g., (2,) for p_startcutoff).
-    fortran_2d : bool
-        If True and `shape==(2,)`, allocate (size,2) with order='F' to mirror legacy layout.
-
-    Returns
-    -------
-    np.ndarray
-        Filled parameter array.
-    """
-    if shape is None:
-        arr = np.zeros(size, dtype=dtype)
-        for i, c in enumerate(s.classes):
-            arr[i] = getattr(c, attr)
-        return arr
-
-    full_shape = (size, *shape)
-    order = 'F' if fortran_2d and len(shape) == 1 and shape[0] > 1 else 'C'
-    arr = np.zeros(full_shape, dtype=dtype, order=order)
-    for i, c in enumerate(s.classes):
-        arr[i, ...] = getattr(c, attr)
-    return arr
 
 
 def run(jsfile: str) -> None:
@@ -104,12 +43,23 @@ def run(jsfile: str) -> None:
         print('Nothing to do...')
         return
 
+    # Precompute arrays once per block to pass into timesat
+    landuse_arr          = build_param_array(s, 'landuse', 'uint8')
+    p_fitmethod_arr      = build_param_array(s, 'p_fitmethod', 'uint8')
+    p_smooth_arr         = build_param_array(s, 'p_smooth', 'double')
+    p_nenvi_arr          = build_param_array(s, 'p_nenvi', 'uint8')
+    p_wfactnum_arr       = build_param_array(s, 'p_wfactnum', 'double')
+    p_startmethod_arr    = build_param_array(s, 'p_startmethod', 'uint8')
+    p_startcutoff_arr    = build_param_array(s, 'p_startcutoff', 'double', shape=(2,), fortran_2d=True)
+    p_low_percentile_arr = build_param_array(s, 'p_low_percentile', 'double')
+    p_fillbase_arr       = build_param_array(s, 'p_fillbase', 'uint8')
+    p_seasonmethod_arr   = build_param_array(s, 'p_seasonmethod', 'uint8')
+    p_seapar_arr         = build_param_array(s, 'p_seapar', 'double')
+
     ray_inited = maybe_init_ray(s.para_check, s.ray_dir)
 
-    flist, qlist = read_file_lists(s.image_file_list, s.quality_file_list)
-    timevector, yr, yrstart, yrend = read_time_vector(s.tv_list, flist)
-    timevector, flist, qlist = _unique_by_timevector(flist, qlist, timevector)
-
+    timevector, flist, qlist, yr, yrstart, yrend = read_time_vector(s.tv_list, flist)
+ 
     z = len(flist)
     print(f'num of images: {z}')
     print('First image: ' + os.path.basename(flist[0]))
@@ -145,7 +95,7 @@ def run(jsfile: str) -> None:
                 pass
 
     # compute memory blocks
-    y_slice_size, num_block = _memory_plan(dx, dy, z, p_outindex_num, yr, s.max_memory_gb)
+    y_slice_size, num_block = memory_plan(dx, dy, z, p_outindex_num, yr, s.max_memory_gb)
     y_slice_end = dy % y_slice_size if (dy % y_slice_size) > 0 else y_slice_size
     print('y_slice_size = ' + str(y_slice_size))
 
@@ -172,22 +122,12 @@ def run(jsfile: str) -> None:
             @ray.remote
             def runtimesat(vi_temp, qa_temp, lc_temp):
                 vpp_para, vppqa, nseason_para, yfit_para, yfitqa, seasonfit, tseq = timesat.tsf2py(
-                    yr, vi_temp, qa_temp, timevector, lc_temp, s.p_nclasses,
-                    _build_param_array(s, 'landuse', 'uint8'),
-                    p_outindex,
-                    s.p_ignoreday, s.p_ylu, s.p_printflag,
-                    _build_param_array(s, 'p_fitmethod', 'uint8'),
-                    _build_param_array(s, 'p_smooth', 'double'),
+                    yr, vi_temp, qa_temp, timevector, lc_temp, s.p_nclasses,landuse_arr, p_outindex,
+                    s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr,
                     s.p_nodata, s.p_davailwin, s.p_outlier,
-                    _build_param_array(s, 'p_nenvi', 'uint8'),
-                    _build_param_array(s, 'p_wfactnum', 'double'),
-                    _build_param_array(s, 'p_startmethod', 'uint8'),
-                    _build_param_array(s, 'p_startcutoff', 'double', shape=(2,), fortran_2d=True),
-                    _build_param_array(s, 'p_low_percentile', 'double'),
-                    _build_param_array(s, 'p_fillbase', 'uint8'),
-                    s.p_hrvppformat,
-                    _build_param_array(s, 'p_seasonmethod', 'uint8'),
-                    _build_param_array(s, 'p_seapar', 'double'),
+                    p_nenvi_arr, p_wfactnum_arr, p_startmethod_arr, p_startcutoff_arr,
+                    p_low_percentile_arr, p_fillbase_arr, s.p_hrvppformat,
+                    p_seasonmethod_arr, p_seapar_arr,
                     1, x, len(flist), p_outindex_num
                 )
                 vpp_para = vpp_para[0, :, :]
@@ -207,19 +147,6 @@ def run(jsfile: str) -> None:
             yfit = np.stack([r[1] for r in results], axis=0)
             nseason = np.stack([r[2] for r in results], axis=0)
         else:
-            # Precompute arrays once per block to pass into timesat
-            landuse_arr          = _build_param_array(s, 'landuse', 'uint8')
-            p_fitmethod_arr      = _build_param_array(s, 'p_fitmethod', 'uint8')
-            p_smooth_arr         = _build_param_array(s, 'p_smooth', 'double')
-            p_nenvi_arr          = _build_param_array(s, 'p_nenvi', 'uint8')
-            p_wfactnum_arr       = _build_param_array(s, 'p_wfactnum', 'double')
-            p_startmethod_arr    = _build_param_array(s, 'p_startmethod', 'uint8')
-            p_startcutoff_arr    = _build_param_array(s, 'p_startcutoff', 'double', shape=(2,), fortran_2d=True)
-            p_low_percentile_arr = _build_param_array(s, 'p_low_percentile', 'double')
-            p_fillbase_arr       = _build_param_array(s, 'p_fillbase', 'uint8')
-            p_seasonmethod_arr   = _build_param_array(s, 'p_seasonmethod', 'uint8')
-            p_seapar_arr         = _build_param_array(s, 'p_seapar', 'double')
-
             vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
                 yr, vi, qa, timevector, lc, s.p_nclasses, landuse_arr, p_outindex,
                 s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr,
