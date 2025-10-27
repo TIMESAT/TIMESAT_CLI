@@ -31,9 +31,6 @@ def _build_output_filenames(st_folder: str, vpp_folder: str, p_outindex, yrstart
     return outyfitfn, outvppfn, outnsfn
 
 
-
-
-
 def run(jsfile: str) -> None:
     print(jsfile)
     cfg = load_config(jsfile)
