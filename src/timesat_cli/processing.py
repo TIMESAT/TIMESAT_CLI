@@ -1,8 +1,9 @@
 from __future__ import annotations
 import math, os, datetime
+from typing import List, Tuple
+
 import numpy as np
 import rasterio
-from typing import List, Tuple
 
 import timesat  # external dependency
 
@@ -48,6 +49,50 @@ def _memory_plan(dx: int, dy: int, z: int, p_outindex_num: int, yr: int, max_mem
     y_slice_size = max(1, y_slice_size)
     num_block = int(math.ceil(dy / y_slice_size))
     return y_slice_size, num_block
+
+
+def _build_param_array(
+    s,
+    attr: str,
+    dtype,
+    size: int = 255,
+    shape: Tuple[int, ...] | None = None,
+    fortran_2d: bool = False
+):
+    """
+    Build a parameter array for TIMESAT class settings.
+
+    Parameters
+    ----------
+    s : object
+        Settings container with `classes` iterable.
+    attr : str
+        Attribute on each class object in `s.classes` (e.g., 'p_smooth').
+    dtype : numpy dtype or dtype string (e.g., 'uint8', 'double').
+    size : int
+        Length of the first dimension (TIMESAT expects 255).
+    shape : tuple[int, ...] | None
+        Extra trailing shape for per-class vectors (e.g., (2,) for p_startcutoff).
+    fortran_2d : bool
+        If True and `shape==(2,)`, allocate (size,2) with order='F' to mirror legacy layout.
+
+    Returns
+    -------
+    np.ndarray
+        Filled parameter array.
+    """
+    if shape is None:
+        arr = np.zeros(size, dtype=dtype)
+        for i, c in enumerate(s.classes):
+            arr[i] = getattr(c, attr)
+        return arr
+
+    full_shape = (size, *shape)
+    order = 'F' if fortran_2d and len(shape) == 1 and shape[0] > 1 else 'C'
+    arr = np.zeros(full_shape, dtype=dtype, order=order)
+    for i, c in enumerate(s.classes):
+        arr[i, ...] = getattr(c, attr)
+    return arr
 
 
 def run(jsfile: str) -> None:
@@ -128,21 +173,21 @@ def run(jsfile: str) -> None:
             def runtimesat(vi_temp, qa_temp, lc_temp):
                 vpp_para, vppqa, nseason_para, yfit_para, yfitqa, seasonfit, tseq = timesat.tsf2py(
                     yr, vi_temp, qa_temp, timevector, lc_temp, s.p_nclasses,
-                    _landuse_arr(s),
+                    _build_param_array(s, 'landuse', 'uint8'),
                     p_outindex,
                     s.p_ignoreday, s.p_ylu, s.p_printflag,
-                    _fitmethod_arr(s),
-                    _smooth_arr(s),
+                    _build_param_array(s, 'p_fitmethod', 'uint8'),
+                    _build_param_array(s, 'p_smooth', 'double'),
                     s.p_nodata, s.p_davailwin, s.p_outlier,
-                    _nenvi_arr(s),
-                    _wfactnum_arr(s),
-                    _startmethod_arr(s),
-                    _startcutoff_arr(s),
-                    _low_percentile_arr(s),
-                    _fillbase_arr(s),
+                    _build_param_array(s, 'p_nenvi', 'uint8'),
+                    _build_param_array(s, 'p_wfactnum', 'double'),
+                    _build_param_array(s, 'p_startmethod', 'uint8'),
+                    _build_param_array(s, 'p_startcutoff', 'double', shape=(2,), fortran_2d=True),
+                    _build_param_array(s, 'p_low_percentile', 'double'),
+                    _build_param_array(s, 'p_fillbase', 'uint8'),
                     s.p_hrvppformat,
-                    _seasonmethod_arr(s),
-                    _seapar_arr(s),
+                    _build_param_array(s, 'p_seasonmethod', 'uint8'),
+                    _build_param_array(s, 'p_seapar', 'double'),
                     1, x, len(flist), p_outindex_num
                 )
                 vpp_para = vpp_para[0, :, :]
@@ -162,148 +207,26 @@ def run(jsfile: str) -> None:
             yfit = np.stack([r[1] for r in results], axis=0)
             nseason = np.stack([r[2] for r in results], axis=0)
         else:
-            landuse_arr        = _landuse_arr(s)
-            p_fitmethod_arr    = _fitmethod_arr(s)
-            p_smooth_arr       = _smooth_arr(s)
-            p_nenvi_arr        = _nenvi_arr(s)
-            p_wfactnum_arr     = _wfactnum_arr(s)
-            p_startmethod_arr  = _startmethod_arr(s)
-            p_startcutoff_arr  = _startcutoff_arr(s)
-            p_low_percentile_arr = _low_percentile_arr(s)
-            p_fillbase_arr     = _fillbase_arr(s)
-            p_seasonmethod_arr = _seasonmethod_arr(s)
-            p_seapar_arr       = _seapar_arr(s)
-
-
-            # Description: ####################################################################
-            '''
-            vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
-                yr, vi, qa, timevector, lc, p_nclasses, landuse, p_outindex,
-                p_ignoreday, p_ylu, p_printflag, p_fitmethod, p_smooth, p_nodata, p_outlier,
-                p_nenvi, p_wfactnum, p_startmethod, p_startcutoff, p_low_percentile,
-                p_fillbase, p_hrvppformat, p_seasonmethod, p_seapar,
-                y, x, z, p_outindex_num)
-            '''
-
-            # Inputs: #########################################################################
-
-            #int# yr:             number of year (integer)
-            #double# vi:             vegetation index (3d numpy array; [row,col,t])
-            #double# qa:             quality (3d numpy array; [row,col,t])
-            #int# timevector:     date of images; in format YYYYDOY (1d numpy integer vector; [t])
-            #int# lc:      land cover map (2d numpy integer vector; [row,col])
-            #int# p_nclasses:     number of land cover classes
-
-
-            #int# y:              number of row
-            #int# x:              number of col
-            #int# z:              number of input images
-
-
-            # settings: ##################################################
-            #int# p_ignoreday                     ! ignore date in leap year
-
-            #dbl# p_ylu(2)                        ! range for y-values
-            #p_ylu = [limitmin,limitmax]
-
-            #dbl# p_a(9)                          ! range and weights for mask data conversion
-            #p_a = [range1min,range1max,weight1,range2min,range2max,weight2,range3min,range3max,weight3]
-
-            #int# p_printflag                     ! plot functions and weights (1/0)
-            #p_printflag            = 1 # debugging information will be printed
-            #p_printflag            = 2 # speed test
-            #p_printflag            = 99 # the row number is running
-            #p_printflag            = 98 # the row & col number is running
-
-            #int# p_nodata                        ! no data from outputs ! NEW
-
-            #int# p_nenvi                         ! number of envelope iterations
-
-            #dbl# p_wfactnum                      ! adaptation strength
-
-            #int# p_startmethod                   ! method for season start
-
-            #dbl# p_startcutoff(2)            ! parameter for season start
-            #p_startcutoff = [start of season threshold, end of season threshold]
-
-            #dbl# p_low_percentile                ! parameter for define base level
-
-            #int# p_hrvppformat                     ! 1: output as HRVPP format (YYDOY)
-            #                                       ! 0: output as TIMESAT format (sequential number, no scalling)
-
-            #dbl# p_seapar(0-1)                  ! parameter for define the level of detecting small seasonal variations
-            #                                    ! mostly effect on the time series with large amplitude
-            #       ! close to 0: more seasons will be detect when the amplitude of time series is close to p_ylu(2)-p_ylu(1)
-            #       ! close to 1: less seasons will be detect when the amplitude of time series is close to p_ylu(2)-p_ylu(1)
-            #   default value is      : 0.5
-            #   31UFS x_5500_y_0      : 0.25 maybe better for crop
-
-            #int# p_outindex(yr*365)              ! an index vector indicates which day will be output
-            #p_outindex = = 1 # output the first day only
-
-            # Outputs: ########################################################################
-            # vpp       :  phenological parameters                     (size: [y,x,nyear*2*13])
-            # vppqa     :  phenological parameters qaulity             (size: [y,x,nyear*2])
-            # nseason   :  number of season                            (size: [y,x])
-            # yfit      :  fit time series                             (size: [y,x,p_outindex_num])
-            # yfitqa    :  fit time series                             (size: [y,x,p_outindex_num])
-            # seasonfit :  caurse season fit                           (size: [p_outindex_num])
-            # tseq      :  sequential time                             (size: [p_outindex_num])
-
-            # Note:
-            # vpp   : 
-            #     Two seasons are stored per year      HRVPP format/scalling factor
-                    # ! 1) season start date                YYDOY
-                    # ! 2) season start value               *10000
-                    # ! 3) season start derivative          *10000
-                    # ! 4) season end date                  YYDOY
-                    # ! 5) season end values                *10000
-                    # ! 6) season end derivative            *10000
-                    # ! 7) season length                    -
-                    # ! 8) basevalue                        *10000
-                    # ! 9) time for peak                    YYDOY
-                    # ! 10) value at peak                   *10000
-                    # ! 11) seasonal amplitude              *10000
-                    # ! 12) large integral                  *10
-                    # ! 13) small integral                  *10
-            # vppqa :  
-            #       Two seasons are stored per year
-            #       vppqa is checking the data availability in each zone in the season
-            #       zone A: start of season
-            #       zone B: peak of season
-            #       zone C: end of season      
-            #       Enough means the zone has 2 or more than 2 good observations
-            #       vppqa class                         vppqa code
-                    # ! 1) Enough data in all zones          10
-                    # ! 2) Enough data in zones B & C         9
-                    # ! 3) Enough data in zones A & C         8
-                    # ! 4) Enough data in zones A & B         7
-                    # ! 5) Enough data in zone A              6
-                    # ! 6) Enough data in zone B              5
-                    # ! 7) Enough data in zone C              4
-                    # ! 8) Fixed-incease point missing        3
-                    # ! 9) No enough data in any zone         2
-                    # ! 10) No season found                   1
-                    # ! 11) Nodata (no yfit output)           0
-            # yfitqa :  
-            #       yfitqa is defind by the number of good observations found in 90-day window      
-            #       yfitqa class                         yfitqa code
-                    # ! 1) >8 observations                    5
-                    # ! 2) >=3 & <= 8 observations            4
-                    # ! 3) >0 & <3 observations               3
-                    # ! 4) no observations (interpolation)    2
-                    # ! 5) no observations (extrapolation)    1
-                    # ! 6) Nodata (no yfit output)            0
-            # seasonfit :
-            #       caurse season fit. Only for single time sereis process and testing
-            # tseq : 
-            #       sequential time
+            # Precompute arrays once per block to pass into timesat
+            landuse_arr          = _build_param_array(s, 'landuse', 'uint8')
+            p_fitmethod_arr      = _build_param_array(s, 'p_fitmethod', 'uint8')
+            p_smooth_arr         = _build_param_array(s, 'p_smooth', 'double')
+            p_nenvi_arr          = _build_param_array(s, 'p_nenvi', 'uint8')
+            p_wfactnum_arr       = _build_param_array(s, 'p_wfactnum', 'double')
+            p_startmethod_arr    = _build_param_array(s, 'p_startmethod', 'uint8')
+            p_startcutoff_arr    = _build_param_array(s, 'p_startcutoff', 'double', shape=(2,), fortran_2d=True)
+            p_low_percentile_arr = _build_param_array(s, 'p_low_percentile', 'double')
+            p_fillbase_arr       = _build_param_array(s, 'p_fillbase', 'uint8')
+            p_seasonmethod_arr   = _build_param_array(s, 'p_seasonmethod', 'uint8')
+            p_seapar_arr         = _build_param_array(s, 'p_seapar', 'double')
 
             vpp, vppqa, nseason, yfit, yfitqa, seasonfit, tseq = timesat.tsf2py(
                 yr, vi, qa, timevector, lc, s.p_nclasses, landuse_arr, p_outindex,
-                s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr, s.p_nodata, s.p_davailwin, s.p_outlier,
-                p_nenvi_arr, p_wfactnum_arr, p_startmethod_arr, p_startcutoff_arr, p_low_percentile_arr,
-                p_fillbase_arr, s.p_hrvppformat, p_seasonmethod_arr, p_seapar_arr,
+                s.p_ignoreday, s.p_ylu, s.p_printflag, p_fitmethod_arr, p_smooth_arr,
+                s.p_nodata, s.p_davailwin, s.p_outlier,
+                p_nenvi_arr, p_wfactnum_arr, p_startmethod_arr, p_startcutoff_arr,
+                p_low_percentile_arr, p_fillbase_arr, s.p_hrvppformat,
+                p_seasonmethod_arr, p_seapar_arr,
                 y, x, len(flist), p_outindex_num)
 
         vpp  = np.moveaxis(vpp, -1, 0)
@@ -318,72 +241,3 @@ def run(jsfile: str) -> None:
         write_st_layers(outyfitfn, yfit, window, img_profile_st)
 
         print(f'Block: {iblock + 1}/{num_block}  finishedtime: {datetime.datetime.now()}')
-
-
-# --- helper builders for class arrays ---
-
-def _landuse_arr(s):
-    arr = np.zeros(255, dtype='uint8')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.landuse
-    return arr
-
-def _fitmethod_arr(s):
-    arr = np.zeros(255, dtype='uint8')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_fitmethod
-    return arr
-
-def _smooth_arr(s):
-    arr = np.zeros(255, dtype='double')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_smooth
-    return arr
-
-def _nenvi_arr(s):
-    arr = np.zeros(255, dtype='uint8')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_nenvi
-    return arr
-
-def _wfactnum_arr(s):
-    arr = np.zeros(255, dtype='double')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_wfactnum
-    return arr
-
-def _startmethod_arr(s):
-    arr = np.zeros(255, dtype='uint8')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_startmethod
-    return arr
-
-def _startcutoff_arr(s):
-    arr = np.zeros((255, 2), order='F', dtype='double')
-    for i, c in enumerate(s.classes):
-        arr[i, :] = c.p_startcutoff
-    return arr
-
-def _low_percentile_arr(s):
-    arr = np.zeros(255, dtype='double')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_low_percentile
-    return arr
-
-def _fillbase_arr(s):
-    arr = np.zeros(255, dtype='uint8')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_fillbase
-    return arr
-
-def _seasonmethod_arr(s):
-    arr = np.zeros(255, dtype='uint8')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_seasonmethod
-    return arr
-
-def _seapar_arr(s):
-    arr = np.zeros(255, dtype='double')
-    for i, c in enumerate(s.classes):
-        arr[i] = c.p_seapar
-    return arr
