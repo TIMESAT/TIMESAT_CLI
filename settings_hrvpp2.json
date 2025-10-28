@@ -1,23 +1,23 @@
 {
   "settings": {
     "tv_list": {
-      "value": "filelists/time_list.txt",
+      "value": "",
       "description": "Text file with one date per line. Each date must be either YYYYMMDD (e.g. 20210415) or YYYYDOY (e.g. 2021105). The number of dates must equal the number of image files."
     },
     "image_file_list": {
-      "value": "filelists/image_files.txt",
+      "value": "C:\\Users\\Zhanzhang.Cai\\Documents\\work\\extract_exsample_tile_out\\ndvi_list.txt",
       "description": "Text file listing full paths to all input raster images (one per line)."
     },
     "quality_file_list": {
-      "value": "filelists/qa_files.txt",
-      "description": "Optional: text file listing full paths to QA rasters (one per line, same length as images). Leave empty string \"\" if not used."
+      "value": "C:\\Users\\Zhanzhang.Cai\\Documents\\work\\extract_exsample_tile_out\\los_mask_list.txt",
+      "description": "Optional: text file listing full paths to QA rasters (one per line, same length as images). Leave empty string if not used."
     },
     "lc_file": {
-      "value": "landcover.tif",
-      "description": "Optional: land cover GeoTIFF to apply class-specific parameters. Values in the raster should match 'landuse' IDs defined under class blocks. Leave empty string \"\" if not used."
+      "value": "C:\\Users\\Zhanzhang.Cai\\Documents\\work\\extract_exsample_tile_out\\LC_31UFS_2021_V3_window.tif",
+      "description": "Optional: land cover GeoTIFF to apply class-specific parameters. Values in the raster should match 'landuse' IDs defined under class blocks. Leave empty string \\"\\" if not used."
     },
     "outputfolder": {
-      "value": "outputs/",
+      "value": "C:\\Users\\Zhanzhang.Cai\\Documents\\work\\test_output",
       "description": "Directory where TIMESAT results will be saved. Subfolders 'ST/' (smoothed time series) and 'VPP/' (phenology parameters) will be created inside."
     },
     "imwindow": {
@@ -34,7 +34,7 @@
       "description": "Day number to ignore in leap years (default: 366 to ignore Dec 31, offseason in the northern hemisphere)."
     },
     "p_ylu": {
-      "value": [0.00001, 2],
+      "value": [0.0, 1.0],
       "description": "Data range limits [min, max]. Values outside are clipped."
     },
     "p_a": {
