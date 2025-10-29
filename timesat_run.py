@@ -170,4 +170,4 @@ def run(jsfile: str) -> None:
 
 
 if __name__ == "__main__":
-    run()
+    run('settings_hrvpp2.json')
