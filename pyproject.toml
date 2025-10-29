@@ -38,16 +38,12 @@ extras = [
 source = "vcs"                                    # <-- tell Hatch to use Git tags
 
 [project.scripts]
-timesat = "timesat_cli.cli:main"         # installs `timesat` command
+timesat = "timesat_cli.__main__:main"         # installs `timesat` command
 # or:
-timesat-cli = "timesat_cli.cli:main"     # installs `timesat-cli` command
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-packages = ["timesat_cli"]
+timesat-cli = "timesat_cli.__main__:main"     # installs `timesat-cli` command
 
 [tool.hatch.build]
 include = ["src/**", "README.md", "LICENSE"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["timesatimage"]
+packages = [{ include = "timesat_cli", from = "src" }]
