@@ -21,8 +21,8 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
+  "rasterio",
   "pandas",
-  # your bindings
   "timesat",
 ]
 
@@ -31,9 +31,6 @@ dev = ["pre-commit", "ruff", "matplotlib"]
 
 [optional-dependencies]
 extras = [
-"pandas" ,
-"tqdm",
-'rasterio',
 'ray',
 ]
 

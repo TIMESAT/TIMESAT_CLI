@@ -4,9 +4,9 @@ from .processing import run
 
 def main():
     parser = argparse.ArgumentParser(description="Run TIMESAT processing pipeline.")
-    parser.add_argument("config", help="Path to the JSON configuration file.")
+    parser.add_argument("settings_json", help="Path to the JSON configuration file.")
     args = parser.parse_args()
-    run(args.config)
+    run(args.settings_json)
 
 if __name__ == "__main__":
     main()

@@ -1,20 +1,83 @@
-# TIMESAT4.1.7 README
+# TIMESAT CLI
 
-> This repository provides a Python/Fortran interface to TIMESAT.
-
-> Clean, step‑by‑step instructions to set up, compile, and run TIMESAT. The environment can be created using **conda** and **pip**.
+`TIMESAT CLI` is a command line interface and workflow manager for the [TIMESAT](https://pypi.org/project/timesat/) package.  
 
 ---
 
-## Overview
-This repository provides a Python interface (via **NumPy f2py**) to the TIMESAT Fortran routines. You will:
+## Requirements
 
-1. Prepare a Python environment (conda or pip).
-2. Install timesat from Testpypi.
-3. Run the application scripts (e.g., `main.py`) with your settings.
+Before you begin, make sure you have:
+
+- **Miniconda** or **Anaconda** (for environment management)  
+  Download: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- **Python 3.10+**
+- **Internet access** (for package installation and updates)
+- Optional: a modern web browser to access the interface.
 
 ---
 
+## Installation
+
+`timesat-cli` is available on **PyPI** and can be installed using **pip** or **uv**.  
+Although it is not published on Conda, you can safely install it *inside* a Conda environment.
+
+### Option 1 — Install inside a Conda environment
+
+```bash
+conda create -n timesat-cli python=3.12
+conda activate timesat-cli
+pip install timesat-cli
+```
+
+> This approach uses Conda only for environment isolation.  
+> The installation itself is handled by pip, which will automatically install `timesat` and all required dependencies.
+
+---
+
+### Option 2 — Install via uv (recommended for pure Python environments)
+
+[`uv`](https://github.com/astral-sh/uv) is a modern, high-performance alternative to pip and venv.
+
+1. Install `uv`:
+
+   ```bash
+   pip install uv
+   # or
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. Create a virtual environment and install the package:
+
+   ```bash
+   uv venv .venv
+   source .venv/bin/activate
+   uv pip install timesat-cli
+   ```
+
+> `uv` provides faster dependency resolution and caching.  
+> It will automatically install `timesat` and related dependencies.
+
+---
+
+### Option 3 — Direct installation with pip
+
+If you already have Python 3.10+ installed:
+
+```bash
+pip install timesat-cli
+```
+
+---
+
+## Launch the Application
+
+After installation, start the GUI with:
+
+```bash
+timesat-cli
+```
+
+---
 
 ## HRVPP Notes — QFLAG2 weights
 If you work with HRVPP quality flags (`QFLAG2`), the following weights `w` are commonly applied:
@@ -54,15 +117,14 @@ Example (settings.json):
 
 ## License
 
-This repository consists of two parts, each under different terms:
+**TIMESAT-CLI** is released under the **GNU General Public License (GPL)**.  
+You are free to use, modify, and distribute this software under the terms of the GPL.
 
-- **Python/Fortran interface code** (in `python_interface/`)  
-  Licensed under the [Apache License 2.0](./python_interface/LICENSE).  
-  You are free to use, modify, and distribute this code under the Apache-2.0 terms.
+The GPL license applies **only to the TIMESAT-CLI source code and assets** provided in this repository.
 
 ### 📦 Dependency Licenses
 
-- `timesat-gui` may install additional open-source dependencies (e.g., Flask, pandas, NumPy).  
+- `timesat` may install additional open-source dependencies (e.g., Flask, pandas, NumPy).  
 - Each dependency retains its own license (MIT, BSD, Apache, etc.).  
 - Before redistributing or bundling this software, review the license terms of each dependency carefully.
 
@@ -70,7 +132,7 @@ This repository consists of two parts, each under different terms:
 
 | Component        | License Type | Notes |
 |------------------|--------------|-------|
-| TIMESAT-GUI      | GPL v3       | Open source, modification and redistribution permitted under GPL. |
+| TIMESAT-CLI      | GPL v3       | Open source, modification and redistribution permitted under GPL. |
 | TIMESAT          | Proprietary  | All rights reserved. Redistribution and modification prohibited without written consent. |
 | Other Dependencies | Various (MIT/BSD/Apache) | Check individual package licenses before redistribution. |
 
@@ -80,7 +142,7 @@ For detailed license information, refer to the license files distributed with ea
 
 ## Citation
 
-If you use **TIMESAT** or **TIMESAT-GUI** in your research, please cite the corresponding release on Zenodo:
+If you use **TIMESAT**, **TIMESAT-CLI** or **TIMESAT-GUI** in your research, please cite the corresponding release on Zenodo:
 
 > Cai, Z., Eklundh, L., & Jönsson, P. (2025). *TIMESAT4:  is a software package for analysing time-series of satellite sensor data* (Version 4.1.x) [Computer software]. Zenodo.   
 > [https://doi.org/10.5281/zenodo.17369757](https://doi.org/10.5281/zenodo.17369757)

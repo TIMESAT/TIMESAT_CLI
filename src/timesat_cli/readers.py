@@ -104,6 +104,7 @@ def open_image_data(
     z = len(yflist)
     vi = np.ndarray((y, x, z), order='F', dtype=data_type)
     qa = np.ndarray((y, x, z), order='F', dtype=data_type)
+    lc = np.ndarray((y, x, z), order='F', dtype=np.uint8)
 
     # VI stack
     if para_check > 1 and ray is not None:
@@ -124,7 +125,7 @@ def open_image_data(
 
     # QA stack
     if wflist == '' or wflist == []:
-        qa = np.ones((y, x, z))
+        qa.fill(1)
     else:
         if para_check > 1 and ray is not None:
             qa_para = np.ndarray((y, x), order='F', dtype=data_type)
@@ -145,7 +146,7 @@ def open_image_data(
 
     # LC
     if lcfile == '':
-        lc = np.ones((y, x))
+        lc.fill(1)
     else:
         with rasterio.open(lcfile, 'r') as temp3:
             lc = temp3.read(1, window=Window(x_map, y_map, x, y))
