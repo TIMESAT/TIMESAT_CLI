@@ -29,7 +29,7 @@ dependencies = [
 [dependency-groups] 
 dev = ["pre-commit", "ruff", "matplotlib"]
 
-[optional-dependencies]
+[project.optional-dependencies]
 extras = [
 'ray',
 ]
