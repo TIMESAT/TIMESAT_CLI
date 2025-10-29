@@ -53,8 +53,6 @@ def run(jsfile: str) -> None:
     p_seasonmethod_arr   = build_param_array(s, 'p_seasonmethod', 'uint8')
     p_seapar_arr         = build_param_array(s, 'p_seapar', 'double')
 
-    print(landuse_arr)
-
     ray_inited = maybe_init_ray(s.para_check, s.ray_dir)
 
     timevector, flist, qlist, yr, yrstart, yrend = read_file_lists(s.tv_list, s.image_file_list, s.quality_file_list)
