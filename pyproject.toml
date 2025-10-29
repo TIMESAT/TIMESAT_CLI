@@ -46,4 +46,4 @@ timesat-cli = "timesat_cli.__main__:main"     # installs `timesat-cli` command
 include = ["src/**", "README.md", "LICENSE"]
 
 [tool.hatch.build.targets.wheel]
-packages = [{ include = "timesat_cli", from = "src" }]
+packages = ["src/timesat_cli"]
