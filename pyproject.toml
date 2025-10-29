@@ -46,10 +46,6 @@ timesat-cli = "timesat_cli.cli:main"     # installs `timesat-cli` command
 package-dir = {"" = "src"}
 packages = ["timesat_cli"]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [tool.hatch.build]
 include = ["src/**", "README.md", "LICENSE"]
 
