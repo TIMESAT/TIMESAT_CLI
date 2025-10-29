@@ -31,7 +31,7 @@ def _build_output_filenames(st_folder: str, vpp_folder: str, p_outindex, yrstart
     return outyfitfn, outvppfn, outnsfn
 
 
-def run(jsfile: str) -> None:
+def run(image_file_list: str, quality_file_list: str, lc_file: str, jsfile: str) -> None:
     print(jsfile)
     cfg = load_config(jsfile)
     s = cfg.settings
@@ -55,7 +55,7 @@ def run(jsfile: str) -> None:
 
     ray_inited = maybe_init_ray(s.para_check, s.ray_dir)
 
-    timevector, flist, qlist, yr, yrstart, yrend = read_file_lists(s.tv_list, s.image_file_list, s.quality_file_list)
+    timevector, flist, qlist, yr, yrstart, yrend = read_file_lists(s.tv_list, image_file_list, quality_file_list)
  
     z = len(flist)
     print(f'num of images: {z}')
@@ -104,9 +104,15 @@ def run(jsfile: str) -> None:
         y_map = int(iblock * y_slice_size + s.imwindow[1])
 
         vi, qa, lc = open_image_data(
-            x_map, y_map, x, y, flist, qlist if qlist else '', s.lc_file,
+            x_map, y_map, x, y, flist, qlist if qlist else '', lc_file,
             img_profile['dtype'], s.p_a, s.para_check, s.p_band_id
         )
+
+        # need to be varified
+        lc_orig = lc.copy()
+        lc[:] = 0
+        lc[np.isin(lc_orig, [2, 5, 6, 7, 8, 9, 10, 14, 15, 16])] = 1
+        lc[np.isin(lc_orig, [11, 12, 13])] = 2
 
         print('--- start TIMESAT processing ---  starttime: ' + str(datetime.datetime.now()))
 
@@ -168,4 +174,7 @@ def run(jsfile: str) -> None:
 
 
 if __name__ == "__main__":
-    run('settings_hrvpp2.json')
+    image_file_list = "C:\\Users\\Zhanzhang.Cai\\Documents\\work\\extract_exsample_tile_out\\ndvi_list.txt"
+    quality_file_list = "C:\\Users\\Zhanzhang.Cai\\Documents\\work\\extract_exsample_tile_out\\los_mask_list.txt"
+    lc_file = "C:\\Users\\Zhanzhang.Cai\\Documents\\work\\extract_exsample_tile_out\\LC_31UFS_2021_V3_window.tif"
+    run(image_file_list, quality_file_list, lc_file, 'settings_hrvpp2.json')
