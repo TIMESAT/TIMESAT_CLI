@@ -30,7 +30,7 @@ dependencies = [
 dev = ["pre-commit", "ruff", "matplotlib"]
 
 [project.optional-dependencies]
-extras = [
+parallel = [
 'ray',
 ]
 

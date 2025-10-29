@@ -1,6 +1,7 @@
 # TIMESAT CLI
 
-`TIMESAT CLI` is a command line interface and workflow manager for the [TIMESAT](https://pypi.org/project/timesat/) package.  
+`TIMESAT CLI` is a command line interface and workflow manager for the [TIMESAT](https://pypi.org/project/timesat/) package. 
+It provides a convenient way to configure and execute TIMESAT processing pipelines directly from the command line or automated scripts. 
 
 ---
 
@@ -11,8 +12,6 @@ Before you begin, make sure you have:
 - **Miniconda** or **Anaconda** (for environment management)  
   Download: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
 - **Python 3.10+**
-- **Internet access** (for package installation and updates)
-- Optional: a modern web browser to access the interface.
 
 ---
 
@@ -69,13 +68,45 @@ pip install timesat-cli
 
 ---
 
-## Launch the Application
+## ⚙️ Optional: Parallel Processing Support
+
+`timesat-cli` provides an optional extra for **parallel execution** using [`ray`](https://www.ray.io/).
+
+To install with parallel-processing support:
+
+```bash
+pip install timesat-cli[parallel]
+```
+
+This installs the base package plus the ray dependency.
+
+---
+
+## Running the Application
 
 After installation, start the GUI with:
 
 ```bash
-timesat-cli
+timesat-cli path/to/settings.json
 ```
+
+or equivalently:
+
+```bash
+python -m timesat_cli path/to/settings.json
+```
+
+---
+
+## Advanced Usage
+
+If you wish to customize or extend the workflow, you can also run or modify the main script directly:
+
+```bash
+python timesat_run.py
+```
+
+The file 'timesat_run.py' contains the full example pipeline that invokes core modules from the 'timesat_cli' package, including configuration loading, file management, TIMESAT processing, and output writing.
 
 ---
 
